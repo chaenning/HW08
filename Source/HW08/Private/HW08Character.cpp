@@ -5,7 +5,6 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
-// Sets default values
 AHW08Character::AHW08Character()
 { 	
 	PrimaryActorTick.bCanEverTick = false;
@@ -89,11 +88,11 @@ void AHW08Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	}
 }
 
-void AHW08Character::Move(const FInputActionValue& value)
+void AHW08Character::Move(const FInputActionValue& Value)
 {
 	if (!Controller) return;
 
-	const FVector2D MoveInput = value.Get<FVector2D>();
+	const FVector2D MoveInput = Value.Get<FVector2D>();
 
 	if (!FMath::IsNearlyZero(MoveInput.X))
 	{
@@ -108,31 +107,31 @@ void AHW08Character::Move(const FInputActionValue& value)
 	}
 }
 
-void AHW08Character::StartJump(const FInputActionValue& value)
+void AHW08Character::StartJump(const FInputActionValue& Value)
 {
-	if (value.Get<bool>())
+	if (Value.Get<bool>())
 	{
 		Jump();
 	}
 }
 
-void AHW08Character::StopJump(const FInputActionValue& value)
+void AHW08Character::StopJump(const FInputActionValue& Value)
 {
-	if (!value.Get<bool>())
+	if (!Value.Get<bool>())
 	{
 		StopJumping();
 	}
 }
 
-void AHW08Character::Look(const FInputActionValue& value)
+void AHW08Character::Look(const FInputActionValue& Value)
 {
-	FVector2D LookInput = value.Get<FVector2D>();
+	FVector2D LookInput = Value.Get<FVector2D>();
 	
 	AddControllerYawInput(LookInput.X);
 	AddControllerPitchInput(LookInput.Y);
 }
 
-void AHW08Character::StartSprint(const FInputActionValue& value)
+void AHW08Character::StartSprint(const FInputActionValue& Value)
 {
 	if (GetCharacterMovement())
 	{
@@ -140,7 +139,7 @@ void AHW08Character::StartSprint(const FInputActionValue& value)
 	}
 }
 
-void AHW08Character::StopSprint(const FInputActionValue& value)
+void AHW08Character::StopSprint(const FInputActionValue& Value)
 {
 	if (GetCharacterMovement())
 	{
