@@ -22,6 +22,9 @@ AHW08Character::AHW08Character()
 	SprintSpeed = NormalSpeed * SprintSpeedMultiplier;
 
 	GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
+
+	MaxHealth = 100.0f;
+	Health = MaxHealth;
 }
 
 
@@ -147,3 +150,38 @@ void AHW08Character::StopSprint(const FInputActionValue& Value)
 	}
 }
 
+float AHW08Character::GetHealth() const
+{
+	return Health;
+}
+
+void AHW08Character::AddHealth(float Amount)
+{
+	// 체력을 회복시킴. 최대 체력을 초과하지 않도록 제한함
+	Health = FMath::Clamp(Health + Amount, 0.0f, MaxHealth);
+	UE_LOG(LogTemp, Warning, TEXT("Health increased to: %f"), Health);
+}
+
+float AHW08Character::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
+	AController* EventInstigator, AActor* DamageCauser)
+{	
+	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	// 체력을 데미지만큼 감소시키고, 0 이하로 떨어지지 않도록 Clamp
+	Health = FMath::Clamp(Health - DamageAmount, 0.0f, MaxHealth);
+	UE_LOG(LogTemp, Warning, TEXT("Health decreased to: %f"), Health);
+
+	// 체력이 0 이하가 되면 사망 처리
+	if (Health <= 0.0f)
+	{
+		OnDeath();
+	}
+
+	// 실제 적용된 데미지를 반환
+	return ActualDamage;
+}
+
+void AHW08Character::OnDeath()
+{
+	UE_LOG(LogTemp, Error, TEXT("Character is Dead!"));
+}

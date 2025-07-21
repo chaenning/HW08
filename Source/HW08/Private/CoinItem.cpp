@@ -1,12 +1,15 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "CoinItem.h"
+
+#include "HW08GameState.h"
+#include "Engine/World.h"
 
 ACoinItem::ACoinItem()
 {
 	PointValue = 0;
 	ItemType = "DefaultCoin";
+
+	PrimaryActorTick.bCanEverTick = true;
+	RotationSpeed = 90.0f;
 }
 
 void ACoinItem::ActivateItem(AActor* Activator)
@@ -15,10 +18,26 @@ void ACoinItem::ActivateItem(AActor* Activator)
 	// 플레이어 태그 확인
 	if (Activator && Activator->ActorHasTag("Player"))
 	{
-		// 점수 획득 디버그 메시지
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("Player gained %d points!"), PointValue));
-        
-		// 부모 클래스 (BaseItem)에 정의된 아이템 파괴 함수 호출
+		if (UWorld* World = GetWorld())
+		{
+			if (AHW08GameState* GameState = World->GetGameState<AHW08GameState>())
+			{
+				GameState->AddScore(PointValue);	
+			}
+		}
 		DestroyItem();
 	}
 }
+
+
+void ACoinItem::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	if (!FMath::IsNearlyZero(RotationSpeed))
+	{
+		// 초당 RotationSpeed만큼, 한 프레임당 (RotationSpeed * DeltaTime)만큼 회전
+		AddActorLocalRotation(FRotator(0.0f, RotationSpeed * DeltaSeconds, 0.0f));
+	}
+}
+
+

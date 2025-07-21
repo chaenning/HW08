@@ -21,5 +21,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	int32 PointValue;
 
+	float RotationSpeed;
+
 	virtual void ActivateItem(AActor* Activator) override;
+	virtual void Tick(float DeltaSeconds) override;
 };
