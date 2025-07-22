@@ -23,9 +23,9 @@ public:
 	TObjectPtr<UDataTable> ItemDataTable;
 	
 	UFUNCTION(BlueprintCallable, Category = "Spawning")
-	void SpawnRandomItem();
+	AActor* SpawnRandomItem();
 
 	FVector GetRandomPointInVolume() const;
 	FItemSpawnRow* GetRandomItem() const;
-	void SpawnItem(const TSubclassOf<AActor>& ItemClass) const;
+	AActor* SpawnItem(const TSubclassOf<AActor>& ItemClass) const;
 };

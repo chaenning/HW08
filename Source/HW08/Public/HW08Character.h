@@ -4,6 +4,7 @@
 #include "GameFramework/Character.h"
 #include "HW08Character.generated.h"
 
+class UWidgetComponent;
 class UCameraComponent;
 class USpringArmComponent;
 
@@ -19,12 +20,15 @@ public:
 	TObjectPtr<USpringArmComponent> SpringArmComp;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 	TObjectPtr<UCameraComponent> CameraComp;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
+	TObjectPtr<UWidgetComponent> OverheadWidget;
 
 	UFUNCTION(BlueprintPure, Category="Health")
 	float GetHealth() const;
 	UFUNCTION(BlueprintCallable, Category = "Health")
 	void AddHealth(float Amount);
-	
+
+	virtual void BeginPlay() override;
 protected:
 	// 체력 관련
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
@@ -63,6 +67,7 @@ protected:
 	
 	// 사망 처리 함수 (체력이 0 이하가 되었을 때 호출)
 	UFUNCTION(BlueprintCallable, Category = "Health")
-	virtual void OnDeath();	
+	virtual void OnDeath();
+	void UpdateOverheadHP();
 	
 };

@@ -1,7 +1,10 @@
 #include "HW08Character.h"
 #include "HW08PlayerController.h"
 #include "EnhancedInputComponent.h"
+#include "HW08GameState.h"
 #include "Camera/CameraComponent.h"
+#include "Components/TextBlock.h"
+#include "Components/WidgetComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -16,6 +19,10 @@ AHW08Character::AHW08Character()
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	CameraComp->SetupAttachment(SpringArmComp);
 	CameraComp->bUsePawnControlRotation = false;
+
+	OverheadWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidget"));
+	OverheadWidget->SetupAttachment(GetMesh());
+	OverheadWidget->SetWidgetSpace(EWidgetSpace::Screen);
 	
 	NormalSpeed = 500.0f;
 	SprintSpeedMultiplier = 1.5f;
@@ -27,6 +34,11 @@ AHW08Character::AHW08Character()
 	Health = MaxHealth;
 }
 
+void AHW08Character::BeginPlay()
+{
+	Super::BeginPlay();
+	UpdateOverheadHP();
+}
 
 void AHW08Character::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -159,17 +171,19 @@ void AHW08Character::AddHealth(float Amount)
 {
 	// 체력을 회복시킴. 최대 체력을 초과하지 않도록 제한함
 	Health = FMath::Clamp(Health + Amount, 0.0f, MaxHealth);
-	UE_LOG(LogTemp, Warning, TEXT("Health increased to: %f"), Health);
+	UpdateOverheadHP();
 }
 
+
+
 float AHW08Character::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
-	AController* EventInstigator, AActor* DamageCauser)
+                                 AController* EventInstigator, AActor* DamageCauser)
 {	
 	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
 	// 체력을 데미지만큼 감소시키고, 0 이하로 떨어지지 않도록 Clamp
 	Health = FMath::Clamp(Health - DamageAmount, 0.0f, MaxHealth);
-	UE_LOG(LogTemp, Warning, TEXT("Health decreased to: %f"), Health);
+	UpdateOverheadHP();
 
 	// 체력이 0 이하가 되면 사망 처리
 	if (Health <= 0.0f)
@@ -183,5 +197,22 @@ float AHW08Character::TakeDamage(float DamageAmount, struct FDamageEvent const& 
 
 void AHW08Character::OnDeath()
 {
-	UE_LOG(LogTemp, Error, TEXT("Character is Dead!"));
+	AHW08GameState* SpartaGameState = GetWorld() ? GetWorld()->GetGameState<AHW08GameState>() : nullptr;
+	if (SpartaGameState)
+	{
+		SpartaGameState->OnGameOver();
+	}
+}
+
+void AHW08Character::UpdateOverheadHP()
+{
+	if (!OverheadWidget) return;
+	
+	UUserWidget* OverheadWidgetInstance = OverheadWidget->GetUserWidgetObject();
+	if (!OverheadWidgetInstance) return;
+	
+	if (UTextBlock* HPText = Cast<UTextBlock>(OverheadWidgetInstance->GetWidgetFromName(TEXT("OverHeadHP"))))
+	{
+		HPText->SetText(FText::FromString(FString::Printf(TEXT("%.0f / %.0f"), Health, MaxHealth)));
+	}
 }

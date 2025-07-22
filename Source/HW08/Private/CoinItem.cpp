@@ -22,7 +22,8 @@ void ACoinItem::ActivateItem(AActor* Activator)
 		{
 			if (AHW08GameState* GameState = World->GetGameState<AHW08GameState>())
 			{
-				GameState->AddScore(PointValue);	
+				GameState->AddScore(PointValue);
+				GameState->OnCoinCollected();
 			}
 		}
 		DestroyItem();
@@ -35,7 +36,6 @@ void ACoinItem::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 	if (!FMath::IsNearlyZero(RotationSpeed))
 	{
-		// 초당 RotationSpeed만큼, 한 프레임당 (RotationSpeed * DeltaTime)만큼 회전
 		AddActorLocalRotation(FRotator(0.0f, RotationSpeed * DeltaSeconds, 0.0f));
 	}
 }
