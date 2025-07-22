@@ -18,6 +18,10 @@ public:
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item|Component")
 	TObjectPtr<USphereComponent> ExplosionCollision;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item|Effects")
+	UParticleSystem* ExplosionParticle;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item|Effects")
+	USoundBase* ExplosionSound;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	float ExplosionDelay;
@@ -26,6 +30,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	int32 ExplosionDamage;
 
+	bool bHasExploded;
 	FTimerHandle ExplosionTimerHandle;
 	
 	virtual void ActivateItem(AActor* Activator) override;

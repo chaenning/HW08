@@ -27,9 +27,9 @@ protected:
 	USphereComponent* Collision;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item|Component")
 	UStaticMeshComponent* StaticMesh;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item|Effects")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item|Effects")
 	UParticleSystem* PickupParticle;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item|Effects")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item|Effects")
 	USoundBase* PickupSound;
 
 	UFUNCTION()
@@ -51,5 +51,5 @@ protected:
 
 	virtual void DestroyItem();
 
-
+	float ParticleLifeTime;
 };

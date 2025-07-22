@@ -2,8 +2,9 @@
 
 
 #include "BaseItem.h"
-
+#include "Particles/ParticleSystemComponent.h"
 #include "Components/SphereComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ABaseItem::ABaseItem()
@@ -23,6 +24,8 @@ ABaseItem::ABaseItem()
 	// 이벤트 바인딩
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &ABaseItem::OnItemOverlap);
 	Collision->OnComponentEndOverlap.AddDynamic(this, &ABaseItem::OnItemEndOverlap);
+
+	ParticleLifeTime = 2.0f;
 }
 
 void ABaseItem::OnItemOverlap(
@@ -50,7 +53,40 @@ void ABaseItem::OnItemEndOverlap(
 
 void ABaseItem::ActivateItem(AActor* Activator)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("Overlap!!")));
+	UParticleSystemComponent* Particle = nullptr;
+	
+	if (PickupParticle)
+	{
+		Particle = UGameplayStatics::SpawnEmitterAtLocation(
+			GetWorld(),
+			PickupParticle,
+			GetActorLocation(),
+			GetActorRotation(),
+			true);
+	}
+	if (PickupSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(
+			GetWorld(),
+			PickupSound,
+			GetActorLocation()
+		);
+	}
+	
+	if (Particle)
+	{
+		FTimerHandle DestroyParticleTimerHandle;
+
+		GetWorld()->GetTimerManager().SetTimer(
+			DestroyParticleTimerHandle,
+			[Particle]()
+			{
+				Particle->DestroyComponent();
+			},
+			ParticleLifeTime,
+			false			
+		);
+	}
 }
 
 FName ABaseItem::GetItemType() const
