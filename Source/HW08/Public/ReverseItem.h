@@ -4,21 +4,22 @@
 
 #include "CoreMinimal.h"
 #include "BaseItem.h"
-#include "StaminaItem.generated.h"
+#include "ReverseItem.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class HW08_API AStaminaItem : public ABaseItem
+class HW08_API AReverseItem : public ABaseItem
 {
 	GENERATED_BODY()
-
 public:
-	AStaminaItem();
+	AReverseItem();
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-	int32 StaminaAmount;
+	float FastAmount;
+	float ReverseDuration;
 	
 	virtual void ActivateItem(AActor* Activator) override;	
+	
 };

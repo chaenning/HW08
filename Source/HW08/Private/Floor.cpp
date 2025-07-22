@@ -2,26 +2,34 @@
 
 
 #include "Floor.h"
+#include "Components/BoxComponent.h"
 
 // Sets default values
 AFloor::AFloor()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
-}
-
-// Called when the game starts or when spawned
-void AFloor::BeginPlay()
-{
-	Super::BeginPlay();
+	Scene = CreateDefaultSubobject<USceneComponent>(TEXT("Scene"));
+	SetRootComponent(Scene);
 	
+	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
+	StaticMesh->SetupAttachment(Scene);
+
+	Collision = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision"));
+	Collision->SetupAttachment(StaticMesh);
+	
+	if (Collision)
+	{
+		Collision->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
+		Collision->SetGenerateOverlapEvents(true);
+	}
 }
 
-// Called every frame
-void AFloor::Tick(float DeltaTime)
+void AFloor::DestroyFloor()
 {
-	Super::Tick(DeltaTime);
-
+	Destroy();
 }
+
+
 

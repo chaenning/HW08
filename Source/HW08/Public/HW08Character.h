@@ -33,6 +33,8 @@ public:
 	float GetMaxStamina() const;
 	UFUNCTION(BlueprintCallable, Category = "Stamina")
 	void AddStamina(float Amount);
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	void BoostSpeed(float Multiplier, float Duration = 5.0f);  // 속도 증가 함수
 	
 	virtual void BeginPlay() override;
 protected:
@@ -61,6 +63,9 @@ protected:
 	float SprintSpeedMultiplier;  
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
 	float SprintSpeed;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float SpeedBoostMultiplier;
+	FTimerHandle SpeedTimerHandle;
 	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual float TakeDamage(	// 데미지 처리 함수 - 외부로부터 데미지를 받을 때 호출됨
@@ -88,10 +93,8 @@ protected:
 	virtual void OnDeath();
 	void UpdateOverheadHP();
 	
-	
-	void DecreaseSprintStamina();
-	void IncreaseSprintStamina();
 	FTimerHandle StaminaTimerHandle;
 	void UpdateStamina();
-
+    
+	void ResetSpeed();
 };

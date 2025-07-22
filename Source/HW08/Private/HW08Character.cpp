@@ -27,6 +27,7 @@ AHW08Character::AHW08Character()
 	NormalSpeed = 500.0f;
 	SprintSpeedMultiplier = 1.5f;
 	SprintSpeed = NormalSpeed * SprintSpeedMultiplier;
+	SpeedBoostMultiplier = 1.0f;
 
 	GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 
@@ -224,6 +225,48 @@ void AHW08Character::UpdateStamina()
 		// 스프린트 중이 아닐 때 스태미나 회복
 		Stamina = FMath::Clamp(Stamina + IncreaseStamina, 0.0f, MaxStamina);
 	}
+}
+
+void AHW08Character::BoostSpeed(float Multiplier, float Duration)
+{
+	if (GetCharacterMovement())
+	{
+		// 현재 진행 중인 스피드 부스트 타이머가 있다면 취소
+		if (GetWorld()->GetTimerManager().IsTimerActive(SpeedTimerHandle))
+		{
+			GetWorld()->GetTimerManager().ClearTimer(SpeedTimerHandle);
+		}
+        
+		// 속도 증가
+		SpeedBoostMultiplier = Multiplier;
+		float NewSpeed = NormalSpeed * SpeedBoostMultiplier;
+		GetCharacterMovement()->MaxWalkSpeed = NewSpeed;
+		SprintSpeed = NewSpeed * SprintSpeedMultiplier;
+        
+		// 지정된 시간 후에 속도를 원래대로 되돌리는 타이머 설정
+		GetWorld()->GetTimerManager().SetTimer(
+			SpeedTimerHandle,
+			this,
+			&AHW08Character::ResetSpeed,
+			Duration,
+			false  // 한 번만 실행
+		);
+	}
+
+}
+
+void AHW08Character::ResetSpeed()
+{
+	if (GetCharacterMovement())
+	{
+		SpeedBoostMultiplier = 1.0f;
+		GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
+		SprintSpeed = NormalSpeed * SprintSpeedMultiplier;
+        
+		// 디버그 메시지
+		UE_LOG(LogTemp, Warning, TEXT("Speed reset to normal: %f"), NormalSpeed);
+	}
+
 }
 
 

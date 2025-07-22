@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "Floor.generated.h"
 
+class UBoxComponent;
+
 UCLASS()
 class HW08_API AFloor : public AActor
 {
@@ -14,13 +16,15 @@ class HW08_API AFloor : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AFloor();
+	
+	void DestroyFloor();
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Spawning")
+	TObjectPtr<USceneComponent> Scene;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Spawning")
+	TObjectPtr<UBoxComponent> Collision;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Spawning")
+	TObjectPtr<UStaticMeshComponent> StaticMesh;
 
 };
