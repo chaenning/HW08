@@ -28,4 +28,8 @@ public:
 	FVector GetRandomPointInVolume() const;
 	FItemSpawnRow* GetRandomItem() const;
 	AActor* SpawnItem(const TSubclassOf<AActor>& ItemClass) const;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Bomb")
+	TSubclassOf<AActor> Bomb;
+	void SpawnBomb();
 };

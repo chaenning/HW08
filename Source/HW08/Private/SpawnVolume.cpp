@@ -93,3 +93,15 @@ AActor* ASpawnVolume::SpawnItem(const TSubclassOf<AActor>& ItemClass) const
 	
 	return SpawnedActor;
 }
+
+void ASpawnVolume::SpawnBomb()
+{
+	FVector SpawnLocation = GetRandomPointInVolume();
+	SpawnLocation.Z += 100.0f;
+	
+	GetWorld()->SpawnActor<AActor>(
+		Bomb,
+		SpawnLocation,
+		FRotator::ZeroRotator
+		);
+}

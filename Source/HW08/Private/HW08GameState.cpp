@@ -16,7 +16,9 @@ AHW08GameState::AHW08GameState()
 	CollectedCoinCount = 0;
 	LevelDuration = 30.0f;
 	CurrentLevelIndex = 0;
+	CurrentWaveindex = 0;
 	MaxLevels = 3;
+	bIsWave = false;
 }
 
 void AHW08GameState::BeginPlay()
@@ -229,6 +231,71 @@ void AHW08GameState::UpdateHUD()
 						StaminaBar->SetPercent(PlayerCharacter->GetStamina()/ PlayerCharacter->GetMaxStamina());
 					}
 				}
+				if (UTextBlock* WaveText = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("Wave"))))
+				{
+					if (UGameInstance* GameInstance = GetGameInstance())
+					{						
+						WaveText->SetText(FText::FromString(FString::Printf(TEXT("Wave: %d"), CurrentWaveindex +1)));
+					}					
+				}
+				if (UTextBlock* BombText = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("Bomb"))))
+				{
+					if (UGameInstance* GameInstance = GetGameInstance())
+					{
+						float RemainingTime = GetWorldTimerManager().GetTimerRemaining(LevelTimerHandle);
+						int32 TimeInt = FMath::FloorToInt(RemainingTime);
+						static int32 LastCheckedTime = -1;
+        
+						if (!bIsWave && (TimeInt == 20 || TimeInt == 12) && TimeInt != LastCheckedTime)
+						{
+							// Wave 관련 로직
+							UpdateWave();
+            
+							// UI 업데이트
+							BombText->SetText(FText::FromString(TEXT("폭탄이 설치되었습니다.")));
+            
+							// 약한 포인터로 캡처
+							TWeakObjectPtr<UTextBlock> WeakBombText(BombText);
+            
+							// 타이머 설정
+							FTimerHandle TextTimerHandle;
+							GetWorld()->GetTimerManager().SetTimer(
+								TextTimerHandle,
+								[WeakBombText]()
+								{
+									if (WeakBombText.IsValid())
+									{
+										WeakBombText->SetText(FText::FromString(TEXT("")));
+									}
+								},
+								3.0f,
+								false
+							);
+            
+							CurrentWaveindex++;
+							LastCheckedTime = TimeInt;
+						}			
+					}					
+				}
+			}
+		} 
+	}
+}
+
+void AHW08GameState::UpdateWave()
+{
+	UE_LOG(LogTemp, Warning, TEXT("UpdateWave"));
+	TArray<AActor*> SpawnVolume;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASpawnVolume::StaticClass(), SpawnVolume);
+
+	if (SpawnVolume.Num() > 0)
+	{
+		// 첫 번째 RespawnFloor의 위치 가져오기
+		if (ASpawnVolume* SpawnBomb = Cast<ASpawnVolume>(SpawnVolume[0]))
+		{
+			for (int32 i = 0; i < (CurrentLevelIndex + 1) * 3 ; i++)
+			{
+				SpawnBomb->SpawnBomb();
 			}
 		}
 	}
