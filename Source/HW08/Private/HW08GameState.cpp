@@ -1,10 +1,12 @@
 #include "HW08GameState.h"
 #include "CoinItem.h"
+#include "HW08Character.h"
 #include "Kismet/GameplayStatics.h"
 #include "SpawnVolume.h"
 #include "HW08GameInstance.h"
 #include "HW08PlayerController.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 
 AHW08GameState::AHW08GameState()
@@ -203,6 +205,29 @@ void AHW08GameState::UpdateHUD()
 				if (UTextBlock* LevelIndexText = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("Level"))))
 				{
 					LevelIndexText->SetText(FText::FromString(FString::Printf(TEXT("Level: %d"), CurrentLevelIndex+1)));
+				}
+				if (UTextBlock* CoinText = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("Coin"))))
+				{
+					if (UGameInstance* GameInstance = GetGameInstance())
+					{						
+						CoinText->SetText(FText::FromString(FString::Printf(TEXT("Coin: %d/%d"), CollectedCoinCount, SpawnedCoinCount)));
+					}					
+				}
+				//스태미나
+				if (UTextBlock* StaminaText = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("Stamina"))))
+				{
+					if (AHW08Character* PlayerCharacter = Cast<AHW08Character>(PlayerController->GetPawn()))
+					{
+						StaminaText->SetText(FText::FromString(
+						FString::Printf(TEXT("%.0f / %.0f"), PlayerCharacter->GetStamina(), PlayerCharacter->GetMaxStamina())));
+					}					
+				}
+				if (UProgressBar* StaminaBar = Cast<UProgressBar>(HUDWidget->GetWidgetFromName(TEXT("StaminaBar"))))
+				{
+					if (AHW08Character* PlayerCharacter = Cast<AHW08Character>(PlayerController->GetPawn()))
+					{
+						StaminaBar->SetPercent(PlayerCharacter->GetStamina()/ PlayerCharacter->GetMaxStamina());
+					}
 				}
 			}
 		}

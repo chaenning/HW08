@@ -27,7 +27,13 @@ public:
 	float GetHealth() const;
 	UFUNCTION(BlueprintCallable, Category = "Health")
 	void AddHealth(float Amount);
-
+	UFUNCTION(BlueprintPure, Category="Stamina")
+	float GetStamina() const;
+	UFUNCTION(BlueprintPure, Category="Stamina")
+	float GetMaxStamina() const;
+	UFUNCTION(BlueprintCallable, Category = "Stamina")
+	void AddStamina(float Amount);
+	
 	virtual void BeginPlay() override;
 protected:
 	// 체력 관련
@@ -35,6 +41,18 @@ protected:
 	float MaxHealth;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	float Health;
+
+	// 스태미나 관련
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
+	float MaxStamina;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
+	float Stamina;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
+	float DiscountStamina;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
+	float IncreaseStamina;
+	bool bIsSprinting;
+
 	
 	// 이동 속도 관련
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
@@ -70,4 +88,10 @@ protected:
 	virtual void OnDeath();
 	void UpdateOverheadHP();
 	
+	
+	void DecreaseSprintStamina();
+	void IncreaseSprintStamina();
+	FTimerHandle StaminaTimerHandle;
+	void UpdateStamina();
+
 };

@@ -32,12 +32,26 @@ AHW08Character::AHW08Character()
 
 	MaxHealth = 100.0f;
 	Health = MaxHealth;
+
+	MaxStamina = 100.0f;
+	Stamina = 100.0f;
+	DiscountStamina = 2.0f;
+	IncreaseStamina = 1.0f;
 }
 
 void AHW08Character::BeginPlay()
 {
 	Super::BeginPlay();
 	UpdateOverheadHP();
+	
+	GetWorld()->GetTimerManager().SetTimer(
+		StaminaTimerHandle,
+		this,
+		&AHW08Character::UpdateStamina, 
+		0.1f,
+		true
+	);
+
 }
 
 void AHW08Character::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -148,8 +162,9 @@ void AHW08Character::Look(const FInputActionValue& Value)
 
 void AHW08Character::StartSprint(const FInputActionValue& Value)
 {
-	if (GetCharacterMovement())
+	if (GetCharacterMovement() && Stamina > 0.0f)
 	{
+		bIsSprinting = true;
 		GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
 	}
 }
@@ -158,6 +173,7 @@ void AHW08Character::StopSprint(const FInputActionValue& Value)
 {
 	if (GetCharacterMovement())
 	{
+		bIsSprinting = false;
 		GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 	}
 }
@@ -174,6 +190,41 @@ void AHW08Character::AddHealth(float Amount)
 	UpdateOverheadHP();
 }
 
+float AHW08Character::GetStamina() const
+{
+	return Stamina;
+}
+
+float AHW08Character::GetMaxStamina() const
+{
+	return MaxStamina;
+}
+
+void AHW08Character::AddStamina(float Amount)
+{
+	Stamina = FMath::Clamp(Stamina + Amount, 0.0f, MaxStamina);
+}
+
+
+void AHW08Character::UpdateStamina()
+{
+	if (!bIsSprinting && Stamina >= MaxStamina) return;
+	if (bIsSprinting)
+	{
+		// 스프린트 중일 때 스태미나 감소
+		Stamina = FMath::Clamp(Stamina - DiscountStamina, 0.0f, MaxStamina);
+		if (Stamina <= 0.0f)
+		{
+			// 스태미나가 0이 되면 자동으로 스프린트 중지
+			StopSprint(FInputActionValue());
+		}
+	}
+	else
+	{
+		// 스프린트 중이 아닐 때 스태미나 회복
+		Stamina = FMath::Clamp(Stamina + IncreaseStamina, 0.0f, MaxStamina);
+	}
+}
 
 
 float AHW08Character::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
@@ -216,3 +267,4 @@ void AHW08Character::UpdateOverheadHP()
 		HPText->SetText(FText::FromString(FString::Printf(TEXT("%.0f / %.0f"), Health, MaxHealth)));
 	}
 }
+

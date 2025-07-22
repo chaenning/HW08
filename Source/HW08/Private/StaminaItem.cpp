@@ -1,16 +1,16 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "HealingItem.h"
+#include "StaminaItem.h"
 #include "HW08Character.h"
 
-AHealingItem::AHealingItem()
+AStaminaItem::AStaminaItem()
 {
-	HealAmount = 20;
-	ItemType = "Healing";
+	StaminaAmount = 20;
+	ItemType = "Stamina";
 }
 
-void AHealingItem::ActivateItem(AActor* Activator)
+void AStaminaItem::ActivateItem(AActor* Activator)
 {
 	Super::ActivateItem(Activator);
 	if (Activator && Activator->ActorHasTag("Player"))
@@ -18,9 +18,8 @@ void AHealingItem::ActivateItem(AActor* Activator)
 		if (AHW08Character* PlayerCharacter = Cast<AHW08Character>(Activator))
 		{
 			// 캐릭터의 체력을 회복
-			PlayerCharacter->AddHealth(HealAmount);
-		}
-        
+			PlayerCharacter->AddStamina(StaminaAmount);
+		}        
 		DestroyItem();
 	}
 }
