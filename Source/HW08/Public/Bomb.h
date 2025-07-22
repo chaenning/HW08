@@ -27,6 +27,14 @@ protected:
 	TObjectPtr<USphereComponent> Collision;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Spawning")
 	TObjectPtr<UStaticMeshComponent> StaticMesh;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+	UParticleSystem* BombParticle;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+	USoundBase* BombSound;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+	UParticleSystem* BombSpawnParticle;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+	USoundBase* BombSpawnSound;
 
 	UFUNCTION()
 	virtual void OnItemOverlap(

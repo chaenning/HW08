@@ -231,6 +231,7 @@ void AHW08Character::BoostSpeed(float Multiplier, float Duration)
 {
 	if (GetCharacterMovement())
 	{
+		bIsBoost = true;
 		// 현재 진행 중인 스피드 부스트 타이머가 있다면 취소
 		if (GetWorld()->GetTimerManager().IsTimerActive(SpeedTimerHandle))
 		{
@@ -252,13 +253,24 @@ void AHW08Character::BoostSpeed(float Multiplier, float Duration)
 			false  // 한 번만 실행
 		);
 	}
+}
 
+bool AHW08Character::GetIsBoost() const
+{
+	return bIsBoost;
+}
+
+float AHW08Character::GetRemainBoostTime()
+{
+	float RemainingTime = GetWorldTimerManager().GetTimerRemaining(SpeedTimerHandle);
+	return RemainingTime;
 }
 
 void AHW08Character::ResetSpeed()
 {
 	if (GetCharacterMovement())
 	{
+		bIsBoost = false;
 		SpeedBoostMultiplier = 1.0f;
 		GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 		SprintSpeed = NormalSpeed * SprintSpeedMultiplier;

@@ -3,7 +3,10 @@
 
 #include "Bomb.h"
 #include "Floor.h"
+#include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystemComponent.h"
 
 // Sets default values
 ABomb::ABomb()
@@ -43,6 +46,52 @@ void ABomb::BeginPlay()
 {
 	Super::BeginPlay();
 
+	UParticleSystemComponent* Particle = nullptr;
+	if (BombSpawnParticle)
+	{
+		Particle = UGameplayStatics::SpawnEmitterAtLocation(
+			GetWorld(),
+			BombSpawnParticle,
+			GetActorLocation(),
+			GetActorRotation(),
+			true);
+	}
+	
+	if (Particle)
+	{
+		FTimerHandle DestroyParticleTimerHandle;
+
+		GetWorld()->GetTimerManager().SetTimer(
+			DestroyParticleTimerHandle,
+			[Particle]()
+			{
+				Particle->DestroyComponent();
+			},
+			5.0f,
+			false			
+		);
+	}
+	if (BombSpawnSound)
+	{
+		if (UAudioComponent* AudioComp = UGameplayStatics::SpawnSound2D(GetWorld(), BombSpawnSound))
+		{
+			// 4초 후에 사운드 정지
+			FTimerHandle SoundTimerHandle;
+			GetWorld()->GetTimerManager().SetTimer(
+				SoundTimerHandle,
+				[AudioComp]()
+				{
+					if (AudioComp && AudioComp->IsValidLowLevel())
+					{
+						AudioComp->Stop();
+					}
+				},
+				4.0f,
+				false
+			);
+		}
+
+	}
 	GetWorld()->GetTimerManager().SetTimer(
 			BombTimerHandle,
 			this,
@@ -93,6 +142,40 @@ void ABomb::RemoveFloor(AActor* OtherActor)
 
 void ABomb::DestroyBomb()
 {
+	UParticleSystemComponent* Particle = nullptr;
+	if (BombParticle)
+	{
+		Particle = UGameplayStatics::SpawnEmitterAtLocation(
+			GetWorld(),
+			BombParticle,
+			GetActorLocation(),
+			GetActorRotation(),
+			true);
+	}
+	if (BombSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(
+			GetWorld(),
+			BombSound,
+			GetActorLocation()
+		);
+	}
+	
+	if (Particle)
+	{
+		FTimerHandle DestroyParticleTimerHandle;
+
+		GetWorld()->GetTimerManager().SetTimer(
+			DestroyParticleTimerHandle,
+			[Particle]()
+			{
+				Particle->DestroyComponent();
+			},
+			3.0f,
+			false			
+		);
+	}
+	
 	for (auto Floor : OverlappedFloors)
 	{
 		Floor->DestroyFloor();

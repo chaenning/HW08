@@ -35,7 +35,9 @@ public:
 	void AddStamina(float Amount);
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	void BoostSpeed(float Multiplier, float Duration = 5.0f);  // 속도 증가 함수
-	
+	bool GetIsBoost() const;
+	float GetRemainBoostTime();
+
 	virtual void BeginPlay() override;
 protected:
 	// 체력 관련
@@ -66,6 +68,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float SpeedBoostMultiplier;
 	FTimerHandle SpeedTimerHandle;
+	bool bIsBoost;
 	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual float TakeDamage(	// 데미지 처리 함수 - 외부로부터 데미지를 받을 때 호출됨

@@ -6,6 +6,7 @@
 #include "HW08GameInstance.h"
 #include "HW08PlayerController.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/Image.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 
@@ -214,6 +215,26 @@ void AHW08GameState::UpdateHUD()
 					{						
 						CoinText->SetText(FText::FromString(FString::Printf(TEXT("Coin: %d/%d"), CollectedCoinCount, SpawnedCoinCount)));
 					}					
+				}
+				if (UTextBlock* PotionText = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("Potion"))))
+				{
+					if (UImage* ImageWidget = Cast<UImage>(HUDWidget->GetWidgetFromName(TEXT("PotionImage"))))
+					{
+						if (AHW08Character* PlayerCharacter = Cast<AHW08Character>(PlayerController->GetPawn()))
+						{
+							if (PlayerCharacter->GetIsBoost())
+							{
+								ImageWidget->SetVisibility(ESlateVisibility::Visible);
+								PotionText->SetText(FText::FromString(
+								FString::Printf(TEXT("%.0f"), PlayerCharacter->GetRemainBoostTime())));
+							}
+							else
+							{
+								ImageWidget->SetVisibility(ESlateVisibility::Hidden);
+								PotionText->SetText(FText::FromString(FString::Printf(TEXT(""))));
+							}
+						}				
+					}						
 				}
 				//스태미나
 				if (UTextBlock* StaminaText = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("Stamina"))))
