@@ -2,7 +2,7 @@
 
 
 #include "RespawnBox.h"
-
+#include "Particles/ParticleSystemComponent.h"
 #include "HW08Character.h"
 #include "RespawnFloor.h"
 #include "Components/BoxComponent.h"
@@ -78,6 +78,41 @@ void ARespawnBox::PlayerRespawn()
 						this,                       // 데미지를 유발한 오브젝트(지뢰)
 						UDamageType::StaticClass()  // 기본 데미지 유형
 					);
+
+					UParticleSystemComponent* Particle = nullptr;
+	
+					if (PickupParticle)
+					{
+						Particle = UGameplayStatics::SpawnEmitterAtLocation(
+							GetWorld(),
+							PickupParticle,
+							SpawnLocation,
+							GetActorRotation(),
+							true);
+					}
+					if (PickupSound)
+					{
+						UGameplayStatics::PlaySoundAtLocation(
+							GetWorld(),
+							PickupSound,
+							SpawnLocation
+						);
+					}
+	
+					if (Particle)
+					{
+						FTimerHandle DestroyParticleTimerHandle;
+
+						GetWorld()->GetTimerManager().SetTimer(
+							DestroyParticleTimerHandle,
+							[Particle]()
+							{
+								Particle->DestroyComponent();
+							},
+							2.0f,
+							false			
+						);
+					}
 				}
 			}
 		}

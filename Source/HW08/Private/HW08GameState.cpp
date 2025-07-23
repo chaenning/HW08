@@ -267,15 +267,14 @@ void AHW08GameState::UpdateHUD()
 						int32 TimeInt = FMath::FloorToInt(RemainingTime);
 						static int32 LastCheckedTime = -1;
         
-						if (!bIsWave && (TimeInt == 20 || TimeInt == 12) && TimeInt != LastCheckedTime)
+						if (!bIsWave && (TimeInt == 20 || TimeInt == 12) && (TimeInt != LastCheckedTime))
 						{
 							// Wave 관련 로직
 							UpdateWave();
-            
+							bIsWave = true;
 							// UI 업데이트
 							BombText->SetText(FText::FromString(TEXT("폭탄이 설치되었습니다.")));
             
-							// 약한 포인터로 캡처
 							TWeakObjectPtr<UTextBlock> WeakBombText(BombText);
             
 							// 타이머 설정
@@ -292,7 +291,7 @@ void AHW08GameState::UpdateHUD()
 								3.0f,
 								false
 							);
-            
+							bIsWave = false;
 							CurrentWaveindex++;
 							LastCheckedTime = TimeInt;
 						}			

@@ -23,6 +23,10 @@ public:
 	TObjectPtr<UBoxComponent> ReSpawnBox;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ReSpawnBox")
 	float RespawnDamage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+	UParticleSystem* PickupParticle;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+	USoundBase* PickupSound;
 
 	UFUNCTION()
 	virtual void OnBoxOverlap(

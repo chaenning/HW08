@@ -120,8 +120,8 @@ void ABomb::AddFloor(AActor* OtherActor)
 		if (AFloor* FloorActor = Cast<AFloor>(OtherActor))
 		{
 			// Floor 배열에 추가
-			OverlappedFloors.AddUnique(FloorActor);
-			UE_LOG(LogTemp, Warning, TEXT("Floor Added to overlap list"));
+			OverlappedFloors.AddUnique(FloorActor); 
+			//UE_LOG(LogTemp, Warning, TEXT("Floor Added to overlap list"));
 		}
 	}
 }
@@ -133,8 +133,8 @@ void ABomb::RemoveFloor(AActor* OtherActor)
 		if (AFloor* FloorActor = Cast<AFloor>(OtherActor))
 		{
 			// Floor 배열에서 제거
-			OverlappedFloors.Remove(FloorActor);
-			UE_LOG(LogTemp, Warning, TEXT("Floor Removed from overlap list"));
+			OverlappedFloors.Remove(FloorActor); 
+			//UE_LOG(LogTemp, Warning, TEXT("Floor Removed from overlap list"));
 		}
 	}
 }
@@ -176,7 +176,8 @@ void ABomb::DestroyBomb()
 		);
 	}
 	
-	for (auto Floor : OverlappedFloors)
+	auto FloorsCopy = OverlappedFloors;
+	for (auto Floor : FloorsCopy)
 	{
 		Floor->DestroyFloor();
 	}
